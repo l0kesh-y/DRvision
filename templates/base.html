@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}DRVision – AI Diabetic Retinopathy Detection{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}AI-powered analysis of retinal fundus images for early detection of diabetic retinopathy.{% endblock %}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ range(1000, 9999) | random }}" />
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<!-- ── Sidebar ─────────────────────────────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <!-- DRVision Logo -->
+    <a href="{{ url_for('index') }}" class="sidebar-logo">
+      <div class="logo-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M2.5 16C5.5 8.5 10.5 4 16 4C21.5 4 26.5 8.5 29.5 16C26.5 23.5 21.5 28 16 28C10.5 28 5.5 23.5 2.5 16Z" fill="#0B57D0" fill-opacity="0.12" stroke="#0B57D0" stroke-width="2.2" stroke-linejoin="round"/>
+          <circle cx="16" cy="16" r="6.5" fill="#0B57D0"/>
+          <circle cx="18" cy="14" r="2" fill="#FFFFFF"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-name">DRVision</span>
+      </div>
+    </a>
+
+    <!-- Sidebar Navigation Menu -->
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('index') }}"
+         class="nav-item {% if request.endpoint == 'index' %}active{% endif %}"
+         id="nav-home">
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6h-4v6H4a1 1 0 01-1-1V9.5z"/>
+          </svg>
+        </span>
+        <span class="nav-label">Home</span>
+      </a>
+
+      <a href="{{ url_for('predict_page') }}"
+         class="nav-item {% if request.endpoint == 'predict_page' %}active{% endif %}"
+         id="nav-predict">
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/>
+            <polyline points="7 9 12 4 17 9"/>
+            <line x1="12" y1="4" x2="12" y2="16"/>
+          </svg>
+        </span>
+        <span class="nav-label">Predict</span>
+      </a>
+
+      <a href="{{ url_for('history_page') }}"
+         class="nav-item {% if request.endpoint == 'history_page' %}active{% endif %}"
+         id="nav-history">
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </span>
+        <span class="nav-label">History</span>
+      </a>
+
+      <a href="{{ url_for('about') }}"
+         class="nav-item {% if request.endpoint == 'about' %}active{% endif %}"
+         id="nav-about">
+        <span class="nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <circle cx="12" cy="8" r="1" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="nav-label">About</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Sidebar Bottom Slogan & Soft Wave Graphic -->
+  <div class="sidebar-bottom">
+    <div class="sidebar-wave-bg">
+      <svg viewBox="0 0 220 120" fill="none" preserveAspectRatio="none">
+        <path d="M0,60 C70,20 140,90 220,50 L220,120 L0,120 Z" fill="rgba(224, 237, 255, 0.55)"/>
+        <path d="M0,80 C60,40 150,105 220,75 L220,120 L0,120 Z" fill="rgba(209, 228, 255, 0.75)"/>
+      </svg>
+    </div>
+    <div class="sidebar-promo-content">
+      <div class="promo-headline">
+        <span>Early Detection</span><br/>
+        <span>Brighter Futures</span>
+      </div>
+      <div class="promo-footer-brand">
+        <div class="pf-name">DRVision</div>
+        <div class="pf-sub">AI for Healthier Eyes</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── Main content wrapper ────────────────────────────────────────── -->
+<div class="app-layout">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div class="topbar-mobile-logo">
+        <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+          <path d="M2.5 16C5.5 8.5 10.5 4 16 4C21.5 4 26.5 8.5 29.5 16C26.5 23.5 21.5 28 16 28C10.5 28 5.5 23.5 2.5 16Z" fill="#0B57D0" fill-opacity="0.15" stroke="#0B57D0" stroke-width="2.5"/>
+          <circle cx="16" cy="16" r="6" fill="#0B57D0"/>
+        </svg>
+        <span>DRVision</span>
+      </div>
+    </div>
+
+    <!-- Top right navigation links and user avatar -->
+    <div class="topbar-right">
+      <nav class="topbar-nav">
+        <a href="{{ url_for('index') }}" class="topbar-link {% if request.endpoint == 'index' %}active{% endif %}">Home</a>
+        <a href="{{ url_for('predict_page') }}" class="topbar-link {% if request.endpoint == 'predict_page' %}active{% endif %}">Predict</a>
+        <a href="{{ url_for('about') }}" class="topbar-link {% if request.endpoint == 'about' %}active{% endif %}">About</a>
+      </nav>
+      <div class="user-avatar-btn" title="Medical Practitioner Profile">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-container">
+        {% for cat, msg in messages %}
+          <div class="flash flash-{{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Page Body -->
+  <main class="page-content" id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+<!-- ── Global toast ───────────────────────────────────────────────── -->
+<div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+<script>
+  // Sidebar toggle
+  const sidebar = document.getElementById('sidebar');
+  const toggle  = document.getElementById('sidebarToggle');
+  if (toggle && sidebar) {
+    toggle.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      document.body.classList.toggle('sidebar-is-collapsed');
+    });
+  }
+
+  // Toast helper
+  function showToast(msg, type = 'info', duration = 3500) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.className   = `toast toast-${type} show`;
+    setTimeout(() => t.classList.remove('show'), duration);
+  }
+</script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

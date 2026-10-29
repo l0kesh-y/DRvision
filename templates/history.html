@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Prediction History – DRVision{% endblock %}
+
+{% block content %}
+<div class="history-container">
+
+  <!-- ── Step 6: Prediction History Card (Matches Image 2 Screen 6) ── -->
+  <div class="history-card">
+    <div class="history-header-row">
+      <h2 class="history-title">Prediction History</h2>
+
+      <!-- Filter Pills -->
+      <div class="history-filter-pills" id="gradeFilters">
+        <button type="button" class="filter-btn active" data-grade="all">All</button>
+        <button type="button" class="filter-btn" data-grade="0">Grade 0</button>
+        <button type="button" class="filter-btn" data-grade="1">Grade 1</button>
+        <button type="button" class="filter-btn" data-grade="2">Grade 2</button>
+        <button type="button" class="filter-btn" data-grade="3">Grade 3</button>
+        <button type="button" class="filter-btn" data-grade="4">Grade 4</button>
+      </div>
+    </div>
+
+    <!-- Table Loading State -->
+    <div id="table-loading" class="table-loading">
+      <div class="medical-spinner" style="width:36px;height:36px;border-width:3px;margin:20px auto;"></div>
+      <p style="color:var(--text-muted);font-size:0.9rem;">Loading clinical history records...</p>
+    </div>
+
+    <!-- Table Wrapper -->
+    <div class="history-table-wrapper" id="table-wrap" hidden>
+      <table class="history-table" id="historyTable">
+        <thead>
+          <tr>
+            <th style="width: 48px;">#</th>
+            <th style="width: 80px;">Image</th>
+            <th>Predicted Grade</th>
+            <th>Date &amp; Time</th>
+            <th style="width: 100px; text-align: center;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="historyTbody">
+          <!-- Populated dynamically via history.js -->
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-history" id="empty-history" hidden>
+      <p style="color:var(--text-muted);margin-bottom:16px;">No analysis records found.</p>
+      <a href="{{ url_for('predict_page') }}" class="btn btn-primary btn-sm">Analyze First Image</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Result Modal Dialog (Clean Light SaaS Theme) ────────────────── -->
+<div class="modal-overlay" id="modalOverlay" hidden>
+  <div class="modal-box" id="resultModal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modal-title">Analysis Details</h3>
+      <button type="button" class="modal-close-btn" id="modalClose" aria-label="Close modal">&times;</button>
+    </div>
+
+    <div class="modal-body" id="modal-body">
+      <div id="modal-content">
+        <!-- Images comparison -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
+          <div>
+            <div style="font-weight:700;font-size:0.9rem;margin-bottom:8px;color:var(--text-navy);">Original Image</div>
+            <div style="width:100%;height:260px;background:#000;border-radius:10px;overflow:hidden;">
+              <img id="modal-original" src="" alt="Fundus photo" style="width:100%;height:100%;object-fit:contain;" />
+            </div>
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:0.9rem;margin-bottom:8px;color:var(--text-navy);">Grad-CAM Heatmap</div>
+            <div style="width:100%;height:260px;background:#000;border-radius:10px;overflow:hidden;">
+              <img id="modal-heatmap" src="" alt="Grad-CAM overlay" style="width:100%;height:100%;object-fit:contain;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Grade pill card -->
+        <div class="predicted-grade-card" style="padding:16px 20px;margin-bottom:20px;">
+          <div class="pg-label">Predicted Grade</div>
+          <div class="pg-number" id="modal-grade-num" style="font-size:42px;margin:2px 0 6px;">2</div>
+          <div class="pg-badge-pill" id="modal-grade-name">Moderate Non-Proliferative DR</div>
+        </div>
+
+        <!-- Meta list -->
+        <div class="result-meta-list" style="border-bottom:none;padding-bottom:0;">
+          <div class="result-meta-row">
+            <span class="meta-row-label">Confidence (Score)</span>
+            <span class="meta-row-val" id="modal-confidence">2.31</span>
+          </div>
+          <div class="result-meta-row">
+            <span class="meta-row-label">Risk Level</span>
+            <span class="risk-pill-badge" id="modal-risk">Moderate</span>
+          </div>
+          <div class="result-meta-row">
+            <span class="meta-row-label">Date &amp; Time</span>
+            <span class="meta-row-val" id="modal-date" style="font-weight:500;color:var(--text-muted);font-size:0.88rem;">–</span>
+          </div>
+          <div class="recommendation-row">
+            <span class="meta-row-label">Recommendation</span>
+            <span class="meta-row-text" id="modal-recommendation">–</span>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:12px;">
+          <button type="button" class="btn btn-ghost" onclick="window.closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/history.js') }}?v={{ range(1000, 9999) | random }}"></script>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}About DRVision – AI Retinal Diagnostics{% endblock %}
+
+{% block content %}
+<div class="home-container">
+
+  <!-- Hero -->
+  <div class="about-hero">
+    <h1>About DRVision</h1>
+    <p>
+      An explainable deep learning pipeline for automated 5-class diabetic retinopathy
+      severity grading, combining clinically-validated retinal preprocessing, DenseNet-121 + CBAM
+      attention networks, and Grad-CAM lesion explainability.
+    </p>
+  </div>
+
+  <!-- Pipeline -->
+  <div class="dataset-summary-card">
+    <h2 class="section-heading">Diagnostic Pipeline Architecture</h2>
+    <div class="about-cards-grid">
+      <div class="about-info-card">
+        <h3>1. Retinal Preprocessing</h3>
+        <p>Circular optic disc masking, Ben Graham illumination normalization, and CLAHE contrast enhancement on the L-channel.</p>
+      </div>
+      <div class="about-info-card">
+        <h3>2. Deep Learning</h3>
+        <p>DenseNet-121 backbone with Convolutional Block Attention Module (CBAM) for spatial and channel-wise feature refinement.</p>
+      </div>
+      <div class="about-info-card">
+        <h3>3. Grad-CAM Explainability</h3>
+        <p>Multi-channel gradient attention maps highlighting microaneurysms, dot/blot hemorrhages, and hard exudates.</p>
+      </div>
+      <div class="about-info-card">
+        <h3>4. Clinical Reporting</h3>
+        <p>Continuous severity scores, International Clinical DR Scale (Grades 0–4), risk triage, and referral recommendations.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- International Scale Reference -->
+  <div class="dataset-summary-card">
+    <h2 class="section-heading">International Clinical DR Severity Scale</h2>
+    <div class="history-table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Grade</th>
+            <th>Classification</th>
+            <th>Key Pathological Findings</th>
+            <th>Risk Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="table-grade-circle g-0">0</span></td>
+            <td><strong>No DR</strong></td>
+            <td>No visible abnormalities across all quadrants.</td>
+            <td><span class="risk-pill-badge risk-low">Low</span></td>
+          </tr>
+          <tr>
+            <td><span class="table-grade-circle g-1">1</span></td>
+            <td><strong>Mild NPDR</strong></td>
+            <td>Microaneurysms only; no hard exudates or hemorrhages.</td>
+            <td><span class="risk-pill-badge risk-low">Low</span></td>
+          </tr>
+          <tr>
+            <td><span class="table-grade-circle g-2">2</span></td>
+            <td><strong>Moderate NPDR</strong></td>
+            <td>More than microaneurysms: dot/blot hemorrhages, hard exudates, cotton-wool spots.</td>
+            <td><span class="risk-pill-badge risk-mod">Moderate</span></td>
+          </tr>
+          <tr>
+            <td><span class="table-grade-circle g-3">3</span></td>
+            <td><strong>Severe NPDR</strong></td>
+            <td>4-2-1 Rule: &gt;20 hemorrhages/quadrant, venous beading, or IRMA.</td>
+            <td><span class="risk-pill-badge risk-high">High</span></td>
+          </tr>
+          <tr>
+            <td><span class="table-grade-circle g-4">4</span></td>
+            <td><strong>Proliferative DR</strong></td>
+            <td>Neovascularisation on disc/retina, vitreous/pre-retinal haemorrhage.</td>
+            <td><span class="risk-pill-badge risk-crit">Critical</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

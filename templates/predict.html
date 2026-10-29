@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Predict – DRVision{% endblock %}
+
+{% block content %}
+<div class="predict-main-card" id="predict-main-card">
+
+  <!-- ═════════════════════════════════════════════════════════════════
+       STEP 2: UPLOAD FUNDUS IMAGE (Matches Image 2 Screen 2)
+       ═════════════════════════════════════════════════════════════════ -->
+  <section id="step-upload" class="flow-step">
+    <div class="flow-header">
+      <h2 class="flow-title">Upload Fundus Image</h2>
+      <p class="flow-subtitle">Upload a retinal fundus image to detect the severity of diabetic retinopathy.</p>
+    </div>
+
+    <div class="upload-dropzone-box" id="dropzone" tabindex="0" role="button" aria-label="Upload retinal fundus image">
+      <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.bmp,.tiff" hidden />
+      
+      <div class="cloud-icon-wrap">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+          <polyline points="12 12 12 17"/>
+          <polyline points="9 15 12 12 15 15"/>
+        </svg>
+      </div>
+
+      <div class="drop-main-text">Drag and drop an image here</div>
+      <div class="drop-or-text">or</div>
+      <button type="button" class="choose-file-btn" id="chooseFileBtn">Choose File</button>
+
+      <div class="format-info-text">Supported formats: JPG, PNG</div>
+      <div class="recom-info-text">Recommended: 512x512 or larger</div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════
+       STEP 3: PREVIEW IMAGE (Matches Image 2 Screen 3)
+       ═════════════════════════════════════════════════════════════════ -->
+  <section id="step-preview" class="flow-step" hidden>
+    <div class="flow-header">
+      <h2 class="flow-title">Preview Image</h2>
+      <p class="flow-subtitle">Displays the uploaded retinal image before analysis.</p>
+    </div>
+
+    <div class="preview-step-box">
+      <div class="preview-frame-container">
+        <img id="preview-image-elem" src="" alt="Retinal fundus preview" />
+      </div>
+
+      <div class="preview-actions-row">
+        <button type="button" class="btn btn-ghost" id="changeImageBtn">
+          &larr; Change Image
+        </button>
+        <button type="button" class="btn btn-primary" id="analyzeImageBtn">
+          Analyze Image
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════
+       INTERMEDIATE: ANALYSIS LOADING STATE
+       ═════════════════════════════════════════════════════════════════ -->
+  <section id="step-loading" class="flow-step" hidden>
+    <div class="analysis-loading-box">
+      <div class="medical-spinner"></div>
+      <div class="loading-main-label" id="loading-main-text">Analyzing Retinal Image...</div>
+      <div class="loading-sub-label" id="loading-sub-text">DenseNet-121 + CBAM feature extraction &amp; lesion grading</div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════
+       STEP 4: PREDICTION RESULT (Matches Image 1 & Image 2 Screen 4)
+       ═════════════════════════════════════════════════════════════════ -->
+  <section id="step-result" class="flow-step" hidden>
+    <div class="flow-header">
+      <h2 class="flow-title">Prediction Result</h2>
+      <p class="flow-subtitle">Analysis complete. Here is the predicted result for the uploaded retinal image.</p>
+    </div>
+
+    <div class="prediction-result-grid">
+      <!-- Left Column: Uploaded Image + View Explanation Button -->
+      <div class="result-col-left">
+        <div class="col-image-title">Uploaded Image</div>
+        <div class="retinal-image-box">
+          <img id="result-uploaded-img" src="" alt="Uploaded retinal fundus" />
+        </div>
+        <button type="button" class="view-explanation-btn" id="viewExplanationBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          View Explanation (Grad-CAM)
+        </button>
+      </div>
+
+      <!-- Right Column: Mint Grade Card + Metadata Table + New Prediction Button -->
+      <div class="result-col-right">
+        <!-- Predicted Grade Card (Exact layout as Image 1) -->
+        <div class="predicted-grade-card" id="predictedGradeCard">
+          <div class="pg-label">Predicted Grade</div>
+          <div class="pg-number" id="result-grade-num">2</div>
+          <div class="pg-badge-pill" id="result-grade-badge">Moderate Non-Proliferative DR</div>
+        </div>
+
+        <!-- Meta Data List -->
+        <div class="result-meta-list">
+          <div class="result-meta-row">
+            <span class="meta-row-label">Confidence (Score)</span>
+            <span class="meta-row-val" id="result-conf-score">2.31</span>
+          </div>
+          <div class="result-meta-row">
+            <span class="meta-row-label">Risk Level</span>
+            <span class="risk-pill-badge risk-mod" id="result-risk-pill">Moderate</span>
+          </div>
+          <div class="recommendation-row">
+            <span class="meta-row-label">Recommendation</span>
+            <span class="meta-row-text" id="result-rec-text">
+              Regular monitoring and consultation with an eye specialist.
+            </span>
+          </div>
+        </div>
+
+        <!-- New Prediction Button -->
+        <button type="button" class="new-prediction-btn" id="newPredictionBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l6 5.81"/>
+          </svg>
+          New Prediction
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════
+       STEP 5: EXPLAINABILITY (GRAD-CAM) (Matches Image 2 Screen 5)
+       ═════════════════════════════════════════════════════════════════ -->
+  <section id="step-gradcam" class="flow-step" hidden>
+    <div class="flow-header">
+      <h2 class="flow-title">Grad-CAM Visualization</h2>
+      <p class="flow-subtitle">Displays Grad-CAM heatmap to show the regions in the image that influenced the prediction.</p>
+    </div>
+
+    <div class="gradcam-view-box">
+      <div class="gradcam-images-row">
+        <!-- Original Image -->
+        <div class="gradcam-col">
+          <div class="gradcam-img-label">Original Image</div>
+          <div class="gradcam-image-frame">
+            <img id="gradcam-original-img" src="" alt="Original retinal fundus" />
+          </div>
+        </div>
+
+        <!-- Grad-CAM Heatmap with Attention Colorbar -->
+        <div class="gradcam-col">
+          <div class="gradcam-img-label">Grad-CAM Heatmap</div>
+          <div class="gradcam-heatmap-with-scale">
+            <div class="gradcam-image-frame">
+              <img id="gradcam-heatmap-img" src="" alt="Grad-CAM Heatmap overlay" />
+            </div>
+            <!-- Vertical Attention Scale Bar -->
+            <div class="gradcam-colorbar-scale">
+              <span class="scale-label-high">High Attention</span>
+              <div class="colorbar-gradient-bar"></div>
+              <span class="scale-label-low">Low Attention</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="gradcam-actions-row">
+        <button type="button" class="btn btn-ghost" id="backToResultBtn">
+          &larr; Back to Result
+        </button>
+        <button type="button" class="btn btn-primary" id="downloadHeatmapBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download Heatmap
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/predict.js') }}?v={{ range(1000, 9999) | random }}"></script>
+{% endblock %}
+

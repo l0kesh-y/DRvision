@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}DRVision – AI Diabetic Retinopathy Detection{% endblock %}
+
+{% block content %}
+<div class="home-container">
+
+  <!-- ── Step 1: Main Home Card (Exact match to Image 2 Screen 1) ── -->
+  <div class="home-card">
+    <h1 class="home-title">Diabetic Retinopathy Detection</h1>
+    <p class="home-subtitle">
+      AI-powered analysis of retinal fundus images for early detection of diabetic retinopathy.
+    </p>
+
+    <!-- 3 Feature cards in a row -->
+    <div class="home-features-grid">
+      <!-- Card 1 -->
+      <div class="feature-box" id="feat-early">
+        <div class="feature-box-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <h3 class="feature-box-title">Early Detection</h3>
+        <p class="feature-box-desc">Helps in timely diagnosis</p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="feature-box" id="feat-dl">
+        <div class="feature-box-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="16" height="16" rx="2"/>
+            <rect x="9" y="9" width="6" height="6"/>
+            <line x1="9" y1="1" x2="9" y2="4"/>
+            <line x1="15" y1="1" x2="15" y2="4"/>
+            <line x1="9" y1="20" x2="9" y2="23"/>
+            <line x1="15" y1="20" x2="15" y2="23"/>
+            <line x1="20" y1="9" x2="23" y2="9"/>
+            <line x1="20" y1="14" x2="23" y2="14"/>
+            <line x1="1" y1="9" x2="4" y2="9"/>
+            <line x1="1" y1="14" x2="4" y2="14"/>
+          </svg>
+        </div>
+        <h3 class="feature-box-title">Deep Learning</h3>
+        <p class="feature-box-desc">DenseNet-121 + CBAM</p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="feature-box" id="feat-care">
+        <div class="feature-box-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <h3 class="feature-box-title">Better Eye Care</h3>
+        <p class="feature-box-desc">Towards a healthier future</p>
+      </div>
+    </div>
+
+    <!-- Call to Action -->
+    <a href="{{ url_for('predict_page') }}" class="btn btn-primary home-cta-btn" id="home-get-started">
+      Get Started &rarr;
+    </a>
+  </div>
+
+  <!-- ── APTOS 2019 Dataset Distribution ── -->
+  <div class="dataset-summary-card">
+    <h2 class="section-heading">APTOS 2019 Dataset Distribution</h2>
+    <div class="dist-grid-clean">
+      {% for item in stats.distribution %}
+      <div class="dist-col-card" id="dist-g-{{ item.grade }}">
+        <div class="dist-col-grade">Grade {{ item.grade }}</div>
+        <div class="dist-col-name" style="color: {{ item.color }}">{{ item.label }}</div>
+        <div class="dist-col-count">{{ item.count }}</div>
+        <div class="dist-col-pct">{{ item.percentage }}% of dataset</div>
+      </div>
+      {% else %}
+      <div class="dist-col-card"><div class="dist-col-grade">Grade 0</div><div class="dist-col-name">No DR</div><div class="dist-col-count">1805</div><div class="dist-col-pct">49.3%</div></div>
+      <div class="dist-col-card"><div class="dist-col-grade">Grade 1</div><div class="dist-col-name">Mild NPDR</div><div class="dist-col-count">370</div><div class="dist-col-pct">10.1%</div></div>
+      <div class="dist-col-card"><div class="dist-col-grade">Grade 2</div><div class="dist-col-name">Moderate NPDR</div><div class="dist-col-count">999</div><div class="dist-col-pct">27.3%</div></div>
+      <div class="dist-col-card"><div class="dist-col-grade">Grade 3</div><div class="dist-col-name">Severe NPDR</div><div class="dist-col-count">193</div><div class="dist-col-pct">5.3%</div></div>
+      <div class="dist-col-card"><div class="dist-col-grade">Grade 4</div><div class="dist-col-name">Proliferative DR</div><div class="dist-col-count">295</div><div class="dist-col-pct">8.1%</div></div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ── DR Severity Scale Reference ── -->
+  <div class="dataset-summary-card">
+    <h2 class="section-heading">Clinical Severity Reference</h2>
+    <div class="history-table-wrapper">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Grade</th>
+            <th>Classification</th>
+            <th>Clinical Biomarkers</th>
+            <th>Risk</th>
+            <th>Recommended Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="table-grade-circle g-0">0</span></td>
+            <td><strong>No DR</strong></td>
+            <td>No visible microvascular lesions</td>
+            <td><span class="risk-pill-badge risk-low">Low</span></td>
+            <td>Annual screening</td>
+          </tr>
+          <tr>
+            <td><span class="table-grade-circle g-1">1</span></td>
+            <td><strong>Mild NPDR</strong></td>
+            <td>Microaneurysms only</td>
+            <td><span class="risk-pill-badge risk-low">Low</span></td>
+            <td>12-month follow-up</td>
+          </tr>
+          <tr>
+            <td><span class="table-grade-circle g-2">2</span></td>
+            <td><strong>Moderate NPDR</strong></td>
+            <td>Microaneurysms, dot/blot hemorrhages, hard exudates</td>
+            <td><span class="risk-pill-badge risk-mod">Moderate</span></td>
+            <td>6-month referral</td>
+          </tr>
+          <tr>
+            <td><span class="table-grade-circle g-3">3</span></td>
+            <td><strong>Severe NPDR</strong></td>
+            <td>&gt;20 hemorrhages/quadrant, venous beading, IRMA</td>
+            <td><span class="risk-pill-badge risk-high">High</span></td>
+            <td>1-month urgent ophthalmologist referral</td>
+          </tr>
+          <tr>
+            <td><span class="table-grade-circle g-4">4</span></td>
+            <td><strong>Proliferative DR</strong></td>
+            <td>Neovascularisation, preretinal/vitreous haemorrhage</td>
+            <td><span class="risk-pill-badge risk-crit">Critical</span></td>
+            <td>Immediate specialist consultation</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

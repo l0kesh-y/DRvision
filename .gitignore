@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+
+__pycache__/
+*.py[cod]
+
+*.db
+
+/dataset/*
+!/dataset/.gitkeep
+/uploads/*
+!/uploads/.gitkeep
+/heatmaps/*
+!/heatmaps/.gitkeep
